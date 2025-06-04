@@ -7,10 +7,12 @@ require('dotenv').config();
 
 const productTypeDefs = require('./schemas/productSchema');
 const userTypeDefs = require('./schemas/userSchema');
+const facturaTypeDefs = require('./schemas/facturaSchema');
+const facturaResolvers = require('./controllers/facturaController');
 
-const resolvers = require('./controllers/userController');
+const resolvers = [require('./controllers/userController'), facturaResolvers];
 
-const typeDefs = [productTypeDefs, userTypeDefs];
+const typeDefs = [productTypeDefs, userTypeDefs, facturaTypeDefs];
 
 const startServer = async () => {
   const app = express();
