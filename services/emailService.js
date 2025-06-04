@@ -1,5 +1,6 @@
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_PASS);
+const fs = require('fs');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 async function enviarFacturaPorCorreo({ to, pdfPath }) {
   const msg = {
@@ -9,7 +10,7 @@ async function enviarFacturaPorCorreo({ to, pdfPath }) {
     text: 'Adjuntamos tu factura en PDF. ¡Gracias por tu compra!',
     attachments: [
       {
-        content: require('fs').readFileSync(pdfPath).toString('base64'),
+        content: fs.readFileSync(pdfPath).toString('base64'),
         filename: 'Factura.pdf',
         type: 'application/pdf',
         disposition: 'attachment'

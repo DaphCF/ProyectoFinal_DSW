@@ -42,12 +42,6 @@ const typeDefs = gql`
         createProducto(input: ProductoInput!): Producto!
         updateProducto(id: ID!, input: ProductoInput!): Producto!
         deleteProducto(id: ID!): Producto
-        emitirFactura(
-            nombre: String!
-            rfc: String!
-            email: String!
-            productos: [ProductoFacturaInput!]!
-        ): Factura
     }
 `;
 

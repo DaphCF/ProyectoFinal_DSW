@@ -18,12 +18,12 @@ const facturaResolvers = {
 
     emitirFactura: async (_, { input }) => {
       try {
-        const { nombre, rfc, email, productos } = input;
+        const { legal_name, rfc, email, productos } = input;
 
         // Crear cliente en Facturapi
         const cliente = await crearCliente({
-          legal_name: nombre,
-          tax_id: rfc,
+          legal_name,
+          rfc,
           email,
           address: {
             zip: "01000",
@@ -35,19 +35,8 @@ const facturaResolvers = {
             country: "MEX"
           }
         });
-
-        // Armar ítems de la factura
-        const items = productos.map(p => ({
-          quantity: p.cantidad,
-          product: {
-            description: p.nombre,
-            product_key: "01010101",
-            price: p.precio
-          }
-        }));
-
         // Crear factura
-        const factura = await crearFactura({ customerId: cliente.id, items });
+        const factura = await crearFactura({ clienteId: cliente.id, productos });
 
         // Crear PDF personalizado
         const pdfUrl = factura.pdf_url;
@@ -58,7 +47,7 @@ const facturaResolvers = {
 
         doc.fontSize(20).text('Factura Generada', { align: 'center' });
         doc.moveDown();
-        doc.text(`Cliente: ${nombre}`);
+        doc.text(`Cliente: ${legal_name}`);
         doc.text(`RFC: ${rfc}`);
         doc.text(`Email: ${email}`);
         doc.moveDown();
@@ -68,7 +57,7 @@ const facturaResolvers = {
         });
 
         const total = productos.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
-        const resumen = await generarResumenCompra({ nombre, productos, total });
+        const resumen = await generarResumenCompra({ nombre: legal_name, productos, total });
 
         doc.moveDown();
         doc.text(`Total: $${total.toFixed(2)}`, { align: 'right' });
@@ -83,7 +72,7 @@ const facturaResolvers = {
 
         return {
           id: factura.id,
-          cliente: { nombre, rfc, email },
+          cliente: { nombre: legal_name, rfc, email },
           productos,
           total,
           pdfUrl,

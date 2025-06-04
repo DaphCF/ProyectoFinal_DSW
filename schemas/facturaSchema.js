@@ -6,10 +6,10 @@ const facturaTypeDefs = gql`
     legal_name: String
     email: String
     tax_id: String
-    address: Address
+    address: Direccion
   }
 
-  type Address {
+  type Direccion {
     zip: String
     street: String
     exterior: String
@@ -19,7 +19,7 @@ const facturaTypeDefs = gql`
     country: String
   }
 
-  input AddressInput {
+  input DireccionInput {
     zip: String
     street: String
     exterior: String
@@ -33,7 +33,7 @@ const facturaTypeDefs = gql`
     legal_name: String!
     email: String!
     tax_id: String!
-    address: AddressInput!
+    address: DireccionInput!
   }
 
   input ProductoFacturaInput {
@@ -43,16 +43,22 @@ const facturaTypeDefs = gql`
   }
 
   input EmitirFacturaInput {
-    nombre: String!
+    legal_name: String!
     rfc: String!
     email: String!
     productos: [ProductoFacturaInput!]!
   }
 
+  type ProductoFactura {
+    nombre: String!
+    precio: Float!
+    cantidad: Int!
+  }
+
   type FacturaEmitida {
     id: ID
     cliente: ClienteInfo
-    productos: [ProductoFacturaInput]
+    productos: [ProductoFactura]
     total: Float
     pdfUrl: String
     resumen: String

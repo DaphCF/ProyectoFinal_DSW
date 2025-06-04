@@ -1,11 +1,11 @@
 const Facturapi = require('facturapi').default; // ✅
 const facturapi = new Facturapi(process.env.FACTURAPI_KEY);
 
-const crearCliente = async ({ nombre, rfc, email }) => {
+const crearCliente = async ({ legal_name, rfc, email }) => {
   const cliente = await facturapi.customers.create({
-    legal_name: nombre,
+    legal_name,
     tax_id: rfc,
-    tax_system: '601', // Genérico, ajusta según sea necesario
+    tax_system: '616',
     email,
     address: {
       zip: '01000',

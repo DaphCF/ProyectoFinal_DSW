@@ -19,13 +19,15 @@ const typeDefs = [productTypeDefs, userTypeDefs, facturaTypeDefs];
 const startServer = async () => {
   const app = express();
 
-  // Conectar a MongoDB
+  // Conectar a MongoDB (omitido temporalmente)
+  /*
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Conectado a MongoDB');
   } catch (err) {
     console.error('❌ Error conectando a MongoDB:', err.message);
   }
+  */
 
   // Apollo Server
   const server = new ApolloServer({ typeDefs, resolvers });
