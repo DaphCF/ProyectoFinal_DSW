@@ -1,18 +1,18 @@
-const { emitirFacturaHandler } = require('../apis/TwilioKey');
+const { emitirFacturaHandler } = require('../TwilioKey');
 const {
   crearCliente,
   obtenerClientes,
   obtenerClientePorId,
   actualizarCliente,
   eliminarCliente
-} = require('../services/userService');
+} = require('../models/clientesModel');
 const {
   crearProducto,
   obtenerProductos,
   obtenerProductoPorId,
   actualizarProducto,
   eliminarProducto
-} = require('../services/productService');
+} = require('../models/productosModel');
 
 const resolvers = {
   Query: {
@@ -28,21 +28,14 @@ const resolvers = {
     createProducto: async (_, { input }) => await crearProducto(input),
     updateProducto: async (_, { id, input }) => await actualizarProducto(id, input),
     deleteProducto: async (_, { id }) => await eliminarProducto(id),
-    emitirFactura: async (_, { clienteId, productos }) => {
-      const cliente = await obtenerClientePorId(clienteId);
-      if (!cliente) throw new Error('Cliente no encontrado');
-
-      const productosFacturapi = productos.map(p => ({
-        description: p.descripcion,
-        product_key: p.claveProducto || "01010101",
-        price: p.precio,
-        quantity: p.cantidad,
-        unit_key: p.claveUnica || "E48"
-      }));
+    emitirFactura: async (_, { nombre, rfc, email, productos }) => {
+      // Aquí puedes agregar validaciones si quieres
 
       return await emitirFacturaHandler({
-        cliente,
-        productos: productosFacturapi
+        nombre,
+        rfc,
+        email,
+        productos
       });
     }
   }
