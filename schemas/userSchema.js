@@ -21,15 +21,6 @@ const typeDefs = gql`
         country: String
     }
 
-    type Producto {
-        id: ID!
-        descripcion: String!
-        precio: Float!
-        cantidad: Int!
-        claveProducto: String!
-        claveUnica: String!
-    }
-
     input ClienteInput {
         legal_name: String!
         rfc: String!
@@ -49,49 +40,15 @@ const typeDefs = gql`
         country: String
     }
 
-    input ProductoInput {
-        descripcion: String!
-        precio: Float!
-        cantidad: Int!
-        claveProducto: String!
-        claveUnica: String!
-    }
-
-    input ProductoFacturaInput {
-        nombre: String!
-        precio: Float!
-        cantidad: Int!
-    }
-
-    type Factura {
-        id: ID
-        total: Float
-        pdfUrl: String
-        resumen: String
-    }
-
     type Query {
         getClientes: [Cliente!]!
         getCliente(id: ID!): Cliente
-        getProductos: [Producto!]!
-        getProducto(id: ID!): Producto
     }
 
     type Mutation {
         createCliente(input: ClienteInput!): Cliente!
         updateCliente(id: ID!, input: ClienteInput!): Cliente!
         deleteCliente(id: ID!): Cliente
-
-        createProducto(input: ProductoInput!): Producto!
-        updateProducto(id: ID!, input: ProductoInput!): Producto!
-        deleteProducto(id: ID!): Producto
-
-        emitirFactura(
-            nombre: String!
-            rfc: String!
-            email: String!
-            productos: [ProductoFacturaInput!]!
-        ): Factura
     }
 `;
 

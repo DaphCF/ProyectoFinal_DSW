@@ -5,8 +5,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-const typeDefs = require('./schemas/typeDefs');
-const resolvers = require('./controllers/userController')
+const productTypeDefs = require('./schemas/productSchema');
+const userTypeDefs = require('./schemas/userSchema');
+
+const resolvers = require('./controllers/userController');
+
+const typeDefs = [productTypeDefs, userTypeDefs];
 
 const startServer = async () => {
   const app = express();
