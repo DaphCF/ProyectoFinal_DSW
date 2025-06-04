@@ -1,4 +1,4 @@
-const gql = require('graphql-tag');
+const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
     type Cliente {
@@ -57,6 +57,19 @@ const typeDefs = gql`
         claveUnica: String!
     }
 
+    input ProductoFacturaInput {
+        nombre: String!
+        precio: Float!
+        cantidad: Int!
+    }
+
+    type Factura {
+        id: ID
+        total: Float
+        pdfUrl: String
+        resumen: String
+    }
+
     type Query {
         getClientes: [Cliente!]!
         getCliente(id: ID!): Cliente
@@ -74,20 +87,11 @@ const typeDefs = gql`
         deleteProducto(id: ID!): Producto
 
         emitirFactura(
-            clienteId: ID!
-            productos: [ProductoInput!]!
+            nombre: String!
+            rfc: String!
+            email: String!
+            productos: [ProductoFacturaInput!]!
         ): Factura
-    }
-
-    type Factura {
-        id: ID!
-        folio: String
-        cliente: Cliente
-        productos: [Producto]
-        total: Float
-        fecha: String
-        pdf_url: String
-        xml_url: String
     }
 `;
 
