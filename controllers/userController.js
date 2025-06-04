@@ -5,14 +5,14 @@ const {
   obtenerClientePorId,
   actualizarCliente,
   eliminarCliente
-} = require('../models/clientesModel');
+} = require('../models/userModel');
 const {
   crearProducto,
   obtenerProductos,
   obtenerProductoPorId,
   actualizarProducto,
   eliminarProducto
-} = require('../models/productosModel');
+} = require('../models/productModel');
 
 const resolvers = {
   Query: {
