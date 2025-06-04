@@ -1,5 +1,5 @@
-const { crearCliente, crearFactura } = require('../services/facturapiService').default;
-const { generarResumenCompra } = require('../services/openaiService');
+const { crearCliente, crearFactura } = require('../services/facturapiService');
+const { generarResumenCompra } = require('../apis/openaiService');
 const { enviarFacturaPorCorreo } = require('../services/emailService');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');

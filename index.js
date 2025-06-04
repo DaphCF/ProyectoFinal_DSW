@@ -8,9 +8,11 @@ require('dotenv').config();
 const productTypeDefs = require('./schemas/productSchema');
 const userTypeDefs = require('./schemas/userSchema');
 const facturaTypeDefs = require('./schemas/facturaSchema');
-const facturaResolvers = require('./controllers/facturaController');
 
-const resolvers = [require('./controllers/userController'), facturaResolvers];
+const facturaResolvers = require('./controllers/facturaController');
+const userResolver = require('./controllers/userController')
+
+const resolvers = [userResolver, facturaResolvers];
 
 const typeDefs = [productTypeDefs, userTypeDefs, facturaTypeDefs];
 

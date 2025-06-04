@@ -1,4 +1,4 @@
-const Facturapi = require('facturapi'); // ✅
+const Facturapi = require('facturapi').default; // ✅
 const facturapi = new Facturapi(process.env.FACTURAPI_KEY);
 
 const crearCliente = async ({ nombre, rfc, email }) => {
