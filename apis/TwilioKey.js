@@ -8,6 +8,8 @@ const FACTURAPI_KEY = process.env.FACTURAPI_KEY;
 const API_BASE = 'https://www.facturapi.io/v2';
 
 const { generarResumenCompra } = require('./openaiService'); // importar
+const { enviarFacturaPorCorreo } = require('../services/emailService');
+const { enviarSMS, enviarWhatsApp } = require('../services/notificacionService');
 
 const emitirFacturaHandler = async ({ nombre, rfc, email, productos }) => {
   try {
@@ -55,8 +57,9 @@ const emitirFacturaHandler = async ({ nombre, rfc, email, productos }) => {
 
     // Paso 4: Generar PDF personalizado
     const doc = new PDFDocument();
-    const filePath = path.join(__dirname, `factura_${factura.data.id}.pdf`);
-    doc.pipe(fs.createWriteStream(filePath));
+    const filePath = path.join(__dirname, `factura_${Date.now()}.pdf`);
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
 
     doc.fontSize(20).text('Factura Generada', { align: 'center' });
     doc.moveDown();
@@ -74,6 +77,21 @@ const emitirFacturaHandler = async ({ nombre, rfc, email, productos }) => {
     doc.text(`Total: $${total.toFixed(2)}`, { align: 'right' });
 
     doc.end();
+
+    // Espera a que el PDF termine de guardarse antes de enviar el correo
+    await new Promise((resolve, reject) => {
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+    });
+
+    // Ahora sí, el PDF está listo y puedes enviarlo
+    await enviarFacturaPorCorreo({ to: email, pdfPath: filePath });
+
+    // Notificar por SMS (si tienes el número)
+    // await enviarSMS({ to: '+521XXXXXXXXXX', body: `¡Hola ${nombre}! Tu factura ha sido enviada a tu correo.` });
+
+    // Notificar por WhatsApp (si tienes el número)
+    // await enviarWhatsApp({ to: '+521XXXXXXXXXX', body: `¡Hola ${nombre}! Tu factura ha sido enviada a tu correo.` });
 
     return {
       id: factura.data.id,
