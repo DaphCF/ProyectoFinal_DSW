@@ -36,6 +36,32 @@ const facturaTypeDefs = gql`
     address: DireccionInput!
   }
 
+  input ActualizarClienteInput {
+    legal_name: String
+    email: String
+    tax_id: String
+    address: DireccionInput
+  }
+
+  type Producto {
+    id: ID
+    description: String
+    product_key: String
+    price: Float
+  }
+
+  input CrearProductoInput {
+    description: String!
+    product_key: String!
+    price: Float!
+  }
+
+  input ActualizarProductoInput {
+    description: String
+    product_key: String
+    price: Float
+  }
+
   input ProductoFacturaInput {
     nombre: String!
     precio: Float!
@@ -47,6 +73,12 @@ const facturaTypeDefs = gql`
     rfc: String!
     email: String!
     productos: [ProductoFacturaInput!]!
+  }
+
+  input CrearProductoInput {
+  description: String!
+  product_key: String!
+  price: Float!
   }
 
   type ProductoFactura {
@@ -70,10 +102,40 @@ const facturaTypeDefs = gql`
     email: String
   }
 
+  type Query {
+    obtenerClientes: [Cliente]
+    obtenerCliente(id: ID!): Cliente
+    obtenerProductos: [Producto]
+    obtenerProducto(id: ID!): Producto
+  }
+
+  type Producto {
+  id: ID
+  description: String
+  product_key: String
+  price: Float
+  }
+
   type Mutation {
     crearCliente(input: CrearClienteInput!): Cliente
+    actualizarCliente(id: ID!, input: ActualizarClienteInput!): Cliente
+    eliminarCliente(id: ID!): Boolean
+
+    crearProducto(input: CrearProductoInput!): Producto
+    actualizarProducto(id: ID!, input: ActualizarProductoInput!): Producto
+    eliminarProducto(id: ID!): Boolean
+
     emitirFactura(input: EmitirFacturaInput!): FacturaEmitida
   }
+
+  extend type Mutation {
+  actualizarCliente(id: ID!, input: CrearClienteInput!): Cliente
+  eliminarCliente(id: ID!): Boolean
+
+  crearProducto(input: CrearProductoInput!): Producto
+  actualizarProducto(id: ID!, input: CrearProductoInput!): Producto
+  eliminarProducto(id: ID!): Boolean
+}
 `;
 
 module.exports = facturaTypeDefs;

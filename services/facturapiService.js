@@ -44,6 +44,65 @@ const crearFactura = async ({ clienteId, productos }) => {
     type: "I"
   });
 
+  // CLIENTES
+const actualizarCliente = async (id, input) => {
+  return await facturapi.customers.update(id, {
+    legal_name: input.legal_name,
+    email: input.email,
+    tax_id: input.tax_id,
+    tax_system: '616',
+    address: input.address
+  });
+};
+
+const eliminarCliente = async (id) => {
+  return await facturapi.customers.delete(id);
+};
+
+// PRODUCTOS
+const crearProducto = async ({ description, product_key, price }) => {
+  return await facturapi.products.create({
+    description,
+    product_key,
+    price,
+    taxes: [
+      {
+        type: 'IVA',
+        rate: 0.16
+      }
+    ]
+  });
+};
+
+const actualizarProducto = async (id, input) => {
+  return await facturapi.products.update(id, {
+    description: input.description,
+    product_key: input.product_key,
+    price: input.price,
+    taxes: [
+      {
+        type: 'IVA',
+        rate: 0.16
+      }
+    ]
+  });
+};
+
+const eliminarProducto = async (id) => {
+  return await facturapi.products.delete(id);
+};
+
+module.exports = {
+  crearCliente,
+  crearFactura,
+  actualizarCliente,
+  eliminarCliente,
+  crearProducto,
+  actualizarProducto,
+  eliminarProducto
+};
+
+
   return factura;
 };
 
