@@ -43,6 +43,9 @@ const crearFactura = async ({ clienteId, productos }) => {
     use: "G03",
     type: "I"
   });
+  return factura;
+  
+};
 
   // CLIENTES
   const actualizarCliente = async (id, input) => {
@@ -102,11 +105,3 @@ const crearFactura = async ({ clienteId, productos }) => {
     eliminarProducto
   };
 
-
-  return factura;
-};
-
-module.exports = {
-  crearCliente,
-  crearFactura
-};
