@@ -1,17 +1,4 @@
-const {
-  crearCliente,
-  obtenerClientes,
-  obtenerCliente,
-  actualizarCliente,
-  eliminarCliente,
-  crearProducto,
-  obtenerProductos,
-  obtenerProducto,
-  actualizarProducto,
-  eliminarProducto,
-  crearFactura
-} = require('../services/facturapiService');
-
+const { crearFactura } = require('../services/facturaService');
 const { generarResumenCompra } = require('../apis/openaiService');
 const { enviarFacturaPorCorreo } = require('../services/emailService');
 
@@ -20,116 +7,13 @@ const fs = require('fs');
 const path = require('path');
 
 const facturaResolvers = {
-  Query: {
-    obtenerClientes: async () => {
-      try {
-        return await obtenerClientes();
-      } catch (error) {
-        console.error('Error al obtener clientes:', error);
-        throw new Error('No se pudieron obtener los clientes');
-      }
-    },
-    obtenerCliente: async (_, { id }) => {
-      try {
-        return await obtenerCliente(id);
-      } catch (error) {
-        console.error('Error al obtener cliente:', error);
-        throw new Error('No se pudo obtener el cliente');
-      }
-    },
-    obtenerProductos: async () => {
-      try {
-        return await obtenerProductos();
-      } catch (error) {
-        console.error('Error al obtener productos:', error);
-        throw new Error('No se pudieron obtener los productos');
-      }
-    },
-    obtenerProducto: async (_, { id }) => {
-      try {
-        return await obtenerProducto(id);
-      } catch (error) {
-        console.error('Error al obtener producto:', error);
-        throw new Error('No se pudo obtener el producto');
-      }
-    }
-  },
-
   Mutation: {
-    crearCliente: async (_, { input }) => {
-      try {
-        return await crearCliente(input);
-      } catch (error) {
-        console.error('Error creando cliente:', error);
-        throw new Error('No se pudo crear el cliente');
-      }
-    },
-
-    actualizarCliente: async (_, { id, input }) => {
-      try {
-        return await actualizarCliente(id, input);
-      } catch (error) {
-        console.error('Error actualizando cliente:', error);
-        throw new Error('No se pudo actualizar el cliente');
-      }
-    },
-
-    eliminarCliente: async (_, { id }) => {
-      try {
-        return await eliminarCliente(id);
-      } catch (error) {
-        console.error('Error eliminando cliente:', error);
-        throw new Error('No se pudo eliminar el cliente');
-      }
-    },
-
-    crearProducto: async (_, { input }) => {
-      try {
-        return await crearProducto(input);
-      } catch (error) {
-        console.error('Error creando producto:', error);
-        throw new Error('No se pudo crear el producto');
-      }
-    },
-
-    actualizarProducto: async (_, { id, input }) => {
-      try {
-        return await actualizarProducto(id, input);
-      } catch (error) {
-        console.error('Error actualizando producto:', error);
-        throw new Error('No se pudo actualizar el producto');
-      }
-    },
-
-    eliminarProducto: async (_, { id }) => {
-      try {
-        return await eliminarProducto(id);
-      } catch (error) {
-        console.error('Error eliminando producto:', error);
-        throw new Error('No se pudo eliminar el producto');
-      }
-    },
-
     emitirFactura: async (_, { input }) => {
       try {
         const { legal_name, rfc, email, productos } = input;
 
-        const cliente = await crearCliente({
-          legal_name,
-          rfc,
-          email,
-          address: {
-            zip: "01000",
-            street: "Calle Falsa",
-            exterior: "123",
-            neighborhood: "Centro",
-            city: "CDMX",
-            state: "Ciudad de México",
-            country: "MEX"
-          }
-        });
-
-        const factura = await crearFactura({ clienteId: cliente.id, productos });
+        // Asume que el cliente ya existe en tu sistema; si no, deberías validar y crearlo externamente.
+        const factura = await crearFactura({ clienteRfc: rfc, productos });
 
         const pdfUrl = factura.pdf_url;
         const doc = new PDFDocument();

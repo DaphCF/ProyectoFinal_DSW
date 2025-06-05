@@ -14,9 +14,22 @@ const AddressSchema = new mongoose.Schema({
 
 const ClientSchema = new mongoose.Schema({
   legal_name: { type: String, required: true },
-  rfc: { type: String, required: true, uppercase: true, unique: true, match: [/^[A-ZÑ&]{3,4}\d{6}[A-Z\d]{3}$/, 'RFC inválido'] },
-  email: { type: String, required: true, unique: true, match: [/^\S+@\S+\.\S+$/, 'Email inválido'] },
+  rfc: {
+    type: String,
+    required: true,
+    uppercase: true,
+    unique: true,
+    match: [/^[A-ZÑ&]{3,4}\d{6}[A-Z\d]{3}$/, 'RFC inválido']
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [/^\S+@\S+\.\S+$/, 'Email inválido']
+  },
   address: AddressSchema,
+
+  facturapiId: { type: String, required: true, unique: true }
 });
 
 module.exports = mongoose.model('Client', ClientSchema);
