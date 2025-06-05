@@ -13,21 +13,7 @@ async function crearProducto(data) {
     });
 
     console.log('Producto creado en Facturapi:', productoFacturapi);
-  try {
-    const productoFacturapi = await facturapiService.crearProducto({
-      name: data.name,
-      description: data.description,
-      product_key: data.product_key,
-      unit_key: data.unit_key,
-      price: data.price,
-    });
 
-    console.log('Producto creado en Facturapi:', productoFacturapi);
-
-    const producto = new Producto({
-      ...data,
-      facturapiId: productoFacturapi.id
-    });
     const producto = new Producto({
       ...data,
       facturapiId: productoFacturapi.id
