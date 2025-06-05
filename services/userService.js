@@ -3,10 +3,12 @@ const facturapiService = require('../apis/facturapi');
 
 // Crear cliente en MongoDB y Facturapi
 async function crearCliente(data) {
-  // Primero, crear en Facturapi
   const clienteFacturapi = await facturapiService.crearCliente(data);
 
-  // Guardar también el ID de Facturapi en Mongo
+  if (!clienteFacturapi || !clienteFacturapi.id) {
+    throw new Error('No se pudo obtener el ID de Facturapi');
+  }
+
   const clienteMongo = new Cliente({
     ...data,
     facturapiId: clienteFacturapi.id
@@ -15,6 +17,7 @@ async function crearCliente(data) {
   await clienteMongo.save();
   return clienteMongo;
 }
+
 
 // Obtener todos los clientes desde Mongo
 async function obtenerClientes() {
@@ -54,13 +57,12 @@ async function eliminarCliente(id) {
   const clienteMongo = await Cliente.findById(id);
   if (!clienteMongo) throw new Error('Cliente no encontrado');
 
-  // Eliminar en Facturapi
+  // Eliminar en Facturapi (usa .del, no .delete)
   await facturapiService.eliminarCliente(clienteMongo.facturapiId);
 
   // Eliminar en Mongo
   return await Cliente.findByIdAndDelete(id);
 }
-
 module.exports = {
   crearCliente,
   obtenerClientes,
