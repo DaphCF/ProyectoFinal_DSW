@@ -11,8 +11,9 @@ const facturaTypeDefs = require('./schemas/facturaSchema');
 
 const facturaResolvers = require('./controllers/facturaController');
 const userResolver = require('./controllers/userController')
+const productResolver = require('./controllers/productController');
 
-const resolvers = [userResolver, facturaResolvers];
+const resolvers = [userResolver, facturaResolvers, productResolver];
 
 const typeDefs = [productTypeDefs, userTypeDefs, facturaTypeDefs];
 
