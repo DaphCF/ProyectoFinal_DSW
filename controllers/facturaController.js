@@ -2,7 +2,7 @@
 const FacturaService = require('../services/facturaService');
 const { generarResumenCompra } = require('../apis/openaiService');
 const { enviarFacturaPorCorreo } = require('../services/emailService');
-
+const { enviarSMS, enviarWhatsApp } = require('../services/notificacionService');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -14,33 +14,9 @@ const facturaResolvers = {
   Mutation: {
     emitirFactura: async (_, { input }) => {
       try {
-        console.log('Input recibido:', JSON.stringify(input, null, 2));
-        
-        const { legal_name, rfc, email, productos } = input;
+        const { legal_name, rfc, email, numero, productos } = input;
 
-        // Validaciones básicas
-        if (!legal_name || !rfc || !email) {
-          throw new Error('Faltan datos requeridos: legal_name, rfc o email');
-        }
-
-        if (!productos || productos.length === 0) {
-          throw new Error('Debe incluir al menos un producto');
-        }
-
-        // Validar productos
-        productos.forEach((producto, index) => {
-          if (!producto.nombre || !producto.precio || !producto.cantidad) {
-            throw new Error(`Producto ${index + 1}: faltan datos requeridos (nombre, precio, cantidad)`);
-          }
-          if (producto.precio <= 0 || producto.cantidad <= 0) {
-            throw new Error(`Producto ${index + 1}: precio y cantidad deben ser mayores a 0`);
-          }
-        });
-
-        console.log('Validaciones pasadas, creando factura...');
-
-        // Preparar datos del cliente para el servicio
-        const clienteInput = {
+        const cliente = await crearCliente({
           legal_name,
           rfc,
           email,
@@ -55,37 +31,11 @@ const facturaResolvers = {
             state: "Estado",
             country: "MEX"
           }
-        };
+        });
 
-        // Convertir productos al formato esperado por el servicio
-        const productosParaServicio = productos.map(p => ({
-          descripcion: p.nombre,
-          precio: p.precio,
-          cantidad: p.cantidad,
-          claveProducto: "01010101", // Clave genérica de producto
-          claveUnica: ""
-        }));
+        const factura = await crearFactura({ clienteId: cliente.id, productos });
 
-        // Crear factura usando el servicio
-        let factura;
-        try {
-          factura = await facturaService.crearFactura({
-            clienteInput,
-            productos: productosParaServicio
-          });
-          console.log('Factura creada exitosamente:', factura);
-        } catch (serviceError) {
-          console.error('Error en facturaService.crearFactura:', serviceError);
-          throw new Error(`Error al crear factura: ${serviceError.message}`);
-        }
-
-        // Crear directorio temp si no existe
-        const tempDir = path.join(__dirname, '../temp');
-        if (!fs.existsSync(tempDir)) {
-          fs.mkdirSync(tempDir, { recursive: true });
-        }
-
-        // Generar PDF local adicional (opcional, ya que Facturapi genera uno)
+        const pdfUrl = factura.pdf_url;
         const doc = new PDFDocument();
         const timestamp = Date.now();
         const filePath = path.join(tempDir, `factura_${timestamp}.pdf`);
@@ -166,22 +116,15 @@ const facturaResolvers = {
           resumen = `Factura ${factura.folio} generada para ${legal_name}. Total: $${factura.total.toFixed(2)} MXN`;
         }
 
-        // Enviar por correo (opcional)
-        try {
-          await enviarFacturaPorCorreo({ 
-            to: email, 
-            pdfPath: filePath,
-            pdfUrl: factura.pdf_url, // URL del PDF de Facturapi
-            xmlUrl: factura.xml_url, // URL del XML de Facturapi
-            subject: `Factura ${factura.folio} - ${legal_name}`,
-            body: `Estimado ${legal_name}, adjunto encontrará su factura fiscal.`
-          });
-          console.log('Correo enviado exitosamente');
-        } catch (emailError) {
-          console.warn('No se pudo enviar correo:', emailError.message);
-        }
+        const folio = factura.id || 'N/A';
+        const fecha = new Date().toLocaleDateString('es-MX');
 
-        // Retornar respuesta
+        const mensajeWhatsApp = `📄 ¡Hola ${legal_name}! Tu factura por $${total.toFixed(2)} MXN con folio ${folio} fue generada el ${fecha}. Gracias por tu preferencia.`;
+        const mensajeSMS = `📢 ${legal_name}, tu factura de $${total.toFixed(2)} fue emitida con folio ${folio}.`;
+
+        await enviarWhatsApp({ to: numero, body: mensajeWhatsApp });
+       await enviarSMS({ to: numero, body: mensajeSMS });
+
         return {
           id: factura._id.toString(),
           cliente: { 
@@ -203,17 +146,8 @@ const facturaResolvers = {
         };
 
       } catch (error) {
-        console.error('Error completo al emitir factura:', error);
-        console.error('Stack trace:', error.stack);
-        
-        // Proporcionar información más específica del error
-        if (error.message.includes('FACTURAPI_KEY')) {
-          throw new Error('Error de configuración: Falta la clave de Facturapi');
-        } else if (error.message.includes('network') || error.message.includes('timeout')) {
-          throw new Error('Error de conexión con el servicio de facturación');
-        } else {
-          throw new Error(`No se pudo emitir la factura: ${error.message}`);
-        }
+        console.error('🛑 Error al emitir factura:', error.response?.data || error.message || error);
+        throw new Error('No se pudo emitir la factura');
       }
     }
   }

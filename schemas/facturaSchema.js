@@ -7,12 +7,14 @@ const facturaTypeDefs = gql`
     cantidad: Int!
   }
 
-  input EmitirFacturaInput {
-    legal_name: String!
-    rfc: String!
-    email: String!
-    productos: [ProductoFacturaInput!]!
-  }
+input EmitirFacturaInput {
+  legal_name: String!
+  rfc: String!
+  email: String!
+  numero: String!                  # ← AGREGA ESTA LÍNEA
+  productos: [ProductoFacturaInput!]!
+}
+  
 
   type ProductoFactura {
     nombre: String!
