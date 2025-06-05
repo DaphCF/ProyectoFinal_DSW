@@ -9,6 +9,7 @@ const typeDefs = gql`
         quantity: Int!
         product_key: String!
         unit_key: String!
+        facturapiId: String!  
     }
 
     input ProductoInput {
@@ -45,4 +46,4 @@ const typeDefs = gql`
     }
 `;
 
-module.exports = typeDefs;
+module.exports = typeDefs;

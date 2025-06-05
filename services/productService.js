@@ -3,20 +3,33 @@ const facturapiService = require('../apis/facturapi');
 
 // Crear producto en Facturapi y luego en Mongo
 async function crearProducto(data) {
-  const productoFacturapi = await facturapiService.crearProducto({
-    description: data.description,
-    product_key: data.product_key,
-    price: data.price
-  });
+  try {
+    const productoFacturapi = await facturapiService.crearProducto({
+      name: data.name,
+      description: data.description,
+      product_key: data.product_key,
+      unit_key: data.unit_key,
+      price: data.price,
+    });
 
-  const producto = new Producto({
-    ...data,
-    facturapiId: productoFacturapi.id
-  });
+    console.log('Producto creado en Facturapi:', productoFacturapi);
 
-  await producto.save();
-  return producto;
+    const producto = new Producto({
+      ...data,
+      facturapiId: productoFacturapi.id
+    });
+
+    await producto.save();
+
+    console.log('Producto guardado en Mongo:', producto);
+    
+    return producto;
+  } catch (error) {
+    console.error('Error en crearProducto:', error);
+    throw new Error('Error al crear producto');
+  }
 }
+
 
 // Obtener todos los productos
 async function obtenerProductos() {
