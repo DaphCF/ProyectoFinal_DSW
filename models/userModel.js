@@ -29,7 +29,7 @@ const ClientSchema = new mongoose.Schema({
   },
   address: AddressSchema,
 
-  facturapiId: { type: String, required: true, unique: true }
+  facturapiId: { type: String, required: true}
 });
 
 module.exports = mongoose.model('Client', ClientSchema);

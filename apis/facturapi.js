@@ -58,9 +58,9 @@ const crearFactura = async ({ clienteId, productos }) => {
     });
   };
 
-  const eliminarCliente = async (id) => {
-    return await facturapi.customers.delete(id);
-  };
+async function eliminarCliente(facturapiId) {
+  return await facturapi.customers.del(facturapiId);
+}
 
   // PRODUCTOS
   const crearProducto = async ({ description, product_key, price }) => {
@@ -92,7 +92,7 @@ const crearFactura = async ({ clienteId, productos }) => {
   };
 
   const eliminarProducto = async (id) => {
-    return await facturapi.products.delete(id);
+    return await facturapi.products.del(id);
   };
 
   module.exports = {
